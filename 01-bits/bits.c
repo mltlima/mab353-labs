@@ -50,7 +50,7 @@
  *          ehPar(7) -> 0
  */
 int32_t ehPar(int32_t x) {
-    return -1;
+    return (~x & 1);
 }
 
 /*
@@ -69,7 +69,7 @@ int32_t ehPar(int32_t x) {
  *          mod8(10) -> 2
  */
 int32_t mod8(int32_t x) {
-    return -1;
+    return (x & 7);
 }
 
 /* Negativo sem -
@@ -86,7 +86,7 @@ int32_t mod8(int32_t x) {
  *          negativo(42) -> -42
  */
 int32_t negativo(int32_t x) {
-    return -1;
+   return ((~x) + 1);
 }
 
 /* Implementação do & usando bitwise
@@ -105,7 +105,7 @@ int32_t negativo(int32_t x) {
  *              11 & 1011 -> 0011
  */
 int32_t bitwiseAnd(int32_t x, int32_t y) {
-    return -1;
+    return ~(~x | ~y);
 }
 
 /* Igual sem ==
@@ -122,7 +122,7 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
  *          ehIgual(16, 8) -> 0
  */
 int32_t ehIgual(int32_t x, int32_t y) {
-    return -1;
+     return (!(x ^ y));
 }
 
 /* Limpa bit n
@@ -140,7 +140,7 @@ int32_t ehIgual(int32_t x, int32_t y) {
  *          limpaBitN(3, 1) -> 1
  */
 int32_t limpaBitN(int32_t x, int8_t n) {
-    return -1;
+    return (x & ~(1 << n));
 }
 
 /*
@@ -170,7 +170,7 @@ int32_t limpaBitN(int32_t x, int8_t n) {
  *
  */
 int32_t bitEmP(int32_t x, uint8_t p) {
-    return -1;
+    return ((x >> p) & 1);
 }
 
 /*
@@ -196,7 +196,7 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return -1;
+    return ((x >> (8 * p)) & 0xFF);
 }
 
 /*
@@ -221,7 +221,7 @@ int32_t byteEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
-    return -1;
+    return (y<<(p<<3)) | (x & (~(0xff << (p << 3))));
 }
 
 /*
@@ -241,7 +241,7 @@ int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
  *
  */
 int32_t minimo(int32_t x, int32_t y) {
-    return -1;
+    return (y ^ ((x ^ y) & -(x < y)));
 }
 
 /*
@@ -260,7 +260,7 @@ int32_t minimo(int32_t x, int32_t y) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-  return -1;
+  return (((x >> 31) | ((~x + 1) >> 31)) + 1);
 }
 
 void teste(int32_t saida, int32_t esperado) {
