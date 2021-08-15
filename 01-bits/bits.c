@@ -20,8 +20,10 @@
  *      - As resoluções com menos operações do que a do monitor terão bonificação.
  *
  * Assinatura:
- *      Aluno: <nome>
- *      DRE: <DRE>
+ *      Aluno: Miguel Lima Tavares
+ *      DRE: 119161571
+ *      Aluno: Vinicius dos Santos Bahia
+ *      DRE: 118176565
  *      versão do GCC utilizada: XXXX
  *
  */
@@ -127,6 +129,12 @@ int32_t negativo(int32_t x) {
 int32_t bitwiseAnd(int32_t x, int32_t y) {
     return ~(~x | ~y);
 }
+/** 
+ * ~x e ~y invertera os bits de x e y
+ * or bit a bit entre o inverso dos dois numeros
+ * resultara no inverso do bitwise and entao inverte-se
+ * os bits com ~ 
+ */
 
 /* Igual sem ==
  *      Permitido:
@@ -144,6 +152,12 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
 int32_t ehIgual(int32_t x, int32_t y) {
      return (!(x ^ y));
 }
+/**
+ * xor bit a bit retorna 1 somente quando os bits sao diferentes
+ * entao se os numeros forem iguais xor retornara 0 e xor retornara
+ * diferente de 0 se forem diferentes. O ! retorna 1 somente se  o
+ * numero se for 0 , qualquer outro numero ele retorna 0
+ */
 
 /* Limpa bit n
  *      Permitido:
@@ -162,6 +176,12 @@ int32_t ehIgual(int32_t x, int32_t y) {
 int32_t limpaBitN(int32_t x, int8_t n) {
     return (x & ~(1 << n));
 }
+/**
+ * 1 bitshift para esquerda produz uma potencia de 2 na posicao 
+ * a ser apagada, ao inverter esse valor teremos o numero invertido
+ * - 1, ex: ~2^3 = ~8 = -8 -1 = -9. Ou seja o inverso sem o complemento
+ * a dois. E ao fazer o and bit a bit teremos um 0 na posicao n
+ */
 
 /*
  * Bit na posição p do inteiro x
@@ -192,6 +212,13 @@ int32_t limpaBitN(int32_t x, int8_t n) {
 int32_t bitEmP(int32_t x, uint8_t p) {
     return ((x >> p) & 1);
 }
+/**
+ * O bitshift a direita sera o mesmo que dividir x por 2^p que
+ * o que eliminara os (p-1) bits menos significativos tornando
+ * o ultimo bit do numero que sobrar a posicao p, que tomando 
+ * um and 1 retornara 1 se esse ultimo bit for 1 ou 0 se ele 
+ * for 0
+ */
 
 /*
  * Byte na posição p do inteiro x
@@ -218,6 +245,12 @@ int32_t bitEmP(int32_t x, uint8_t p) {
 int32_t byteEmP(int32_t x, uint8_t p) {
     return ((x >> (p << 3)) & 0xFF);
 }
+/**
+ * O bitshift a direita movera 8 bits ou 1 byte a direita, 
+ * deixando o byte menos significativo como o numero que queremos
+ * da posicao p. O and bit a bit com o ultimo numero em hexa 
+ * retornara o proprio numero em hexa 
+ */
 
 /*
  * Seta byte na posição p do inteiro x como y
@@ -243,6 +276,12 @@ int32_t byteEmP(int32_t x, uint8_t p) {
 int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
     return (y<<(p<<3)) | (x & (~(0xff << (p << 3))));
 }
+/**
+ * y<<(p<<3) criara um numero de um byte y seguidos de bytes formados por 0 ou somente 0 se y = 0
+ * ~(0xff << (p << 3)) criara um numero composto somente por Fs e 0s no lugar do byte escolhido
+ * x & ~(0xff << (p << 3)) substituira o local do byte p com 0s
+ * e o or substituira os 0s pelo numero escolhido se y != 0 se y = 0 o numero ja estara correto
+ */
 
 /*
  * Minimo
@@ -263,6 +302,12 @@ int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
 int32_t minimo(int32_t x, int32_t y) {
     return (y ^ ((x ^ y) & -(x < y)));
 }
+/**
+ * A parte -(x < y) sera 0 se x >= y e sera -1 se x < y.
+ * Como x & -1 = x  e x & 0 = 0 para qualquer 0. Se x < y teremos y ^ x ^ y que 
+ * e igual a x porque y ^ y e zerado. E de qualquer outra maneira teriamos 
+ * y ^ 0 que vale y. Entao teremos x se x < y e y de qualquer outra forma
+ */
 
 /*
  * Negação lógica sem !
@@ -282,6 +327,13 @@ int32_t minimo(int32_t x, int32_t y) {
 int32_t negacaoLogica(int32_t x) {
   return (((~x+1)|x)>>31)+1;
 }
+/**
+ * o right shift maximo que podemos dar e 31 bits para nao haver um overflow
+ * ao fazer o shift em x e em seu inverso, temos garantido que um desses dois
+ * sera negativo e o shift feito o colocara em  0xFFFFFFFF. Entao fazemos o or
+ * para obter o numero que queremos negativo e fazemos o complemento a dois 
+ * para obter a negacao  
+ */
 
 void teste(int32_t saida, int32_t esperado) {
     static uint8_t test_number = 0;
