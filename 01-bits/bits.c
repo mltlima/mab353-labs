@@ -52,6 +52,12 @@
 int32_t ehPar(int32_t x) {
     return (~x & 1);
 }
+/**
+ * Apenas o ultimo digito e comparado, ao fazer ~x, inverte-se os bits
+ * se um numero for par, ele termina em 0 em binario e 1 se for impar
+ * ao inverter o numero teremos entao 1 & 1 = 1 se for par
+ * e 0 & 1 = 0 se for impar 
+ */
 
 /*
  * Módulo 8
@@ -71,6 +77,14 @@ int32_t ehPar(int32_t x) {
 int32_t mod8(int32_t x) {
     return (x & 7);
 }
+/**
+ * Como 8 e uma potencia de 2 ele e representado por um unico 1 e zeros
+ * ao diminuir 1 teremos um numero composto somente por ums.
+ * Fazendo um and bit a bit qualquer numero diferente de 1 retona 0
+ * assim o numero maximo que pode ser retornado e 7.
+ * Ou seja, 2^3 3 bits menos significativos serao
+ * preservados e os bits alem do terceiro bit serao forcados a zero
+ */
 
 /* Negativo sem -
  *      Permitido:
@@ -88,6 +102,12 @@ int32_t mod8(int32_t x) {
 int32_t negativo(int32_t x) {
    return ((~x) + 1);
 }
+/**
+ * Ao inverter os bits termos o numero negativo menos 1, ex
+ * ~100 = -101, entao adicionamos 1 para termos o numero negativo
+ * verdadeiro
+ */
+
 
 /* Implementação do & usando bitwise
  *      Permitido:
@@ -196,7 +216,7 @@ int32_t bitEmP(int32_t x, uint8_t p) {
  *
  */
 int32_t byteEmP(int32_t x, uint8_t p) {
-    return ((x >> (8 * p)) & 0xFF);
+    return ((x >> (p << 3)) & 0xFF);
 }
 
 /*
@@ -260,7 +280,7 @@ int32_t minimo(int32_t x, int32_t y) {
  *
  */
 int32_t negacaoLogica(int32_t x) {
-  return (((x >> 31) | ((~x + 1) >> 31)) + 1);
+  return (((~x+1)|x)>>31)+1;
 }
 
 void teste(int32_t saida, int32_t esperado) {
