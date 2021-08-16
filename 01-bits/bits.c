@@ -52,14 +52,30 @@
  *          ehPar(7) -> 0
  */
 int32_t ehPar(int32_t x) {
-    return (~x & 1);
+    return (x ^ 1) & 1;
 }
-/**
- * Apenas o ultimo digito e comparado, ao fazer ~x, inverte-se os bits
- * se um numero for par, ele termina em 0 em binario e 1 se for impar
- * ao inverter o numero teremos entao 1 & 1 = 1 se for par
- * e 0 & 1 = 0 se for impar 
- */
+/* 
+    Checando se um número bnário é par ou ímpar:
+    - se o LSb de x é 1, x é ímpar (retorna 0);
+    - se o LSb de x é 0, x é par (retorna 1);
+
+    A ideia é verificar se o último bit do número x é 1 ou não. 
+    Se o último bit for 1, o número é ímpar, caso contrário, é par. 
+    Como sabemos, a operação XOR bit a bit de um número qualquer por 1
+    incrementa o valor do número em 1 se o número for par, caso contrário, 
+    diminui o valor do número em 1 se o valor for ímpar.
+        exemplo:
+                    0111
+                ^   0001
+                =   0110
+    Como queremos retornar apenas 1 ou 0, após a operação XOR usa-se a 
+    operação AND bit a bit com a máscara 1, para persistir apenas o LSb
+    e zerar o restante dos bits.
+        exemplo:
+                    0110
+                &   0001
+                =   0000
+     */
 
 /*
  * Módulo 8
@@ -104,11 +120,12 @@ int32_t mod8(int32_t x) {
 int32_t negativo(int32_t x) {
    return ((~x) + 1);
 }
-/**
- * Ao inverter os bits termos o numero negativo menos 1, ex
- * ~100 = -101, entao adicionamos 1 para termos o numero negativo
- * verdadeiro
- */
+/* 
+    Para representar um número em sua forma negativa,
+    basta representá-lo em complemento a 2, o que consiste
+    em aplicar um NOT bit a bit no número, somando-se 1 ao
+    final.
+     */
 
 
 /* Implementação do & usando bitwise
@@ -129,12 +146,29 @@ int32_t negativo(int32_t x) {
 int32_t bitwiseAnd(int32_t x, int32_t y) {
     return ~(~x | ~y);
 }
-/** 
- * ~x e ~y invertera os bits de x e y
- * or bit a bit entre o inverso dos dois numeros
- * resultara no inverso do bitwise and entao inverte-se
- * os bits com ~ 
- */
+/* 
+    Em uma operação AND entre dois termos, se um dos termos for zero,
+    necessariamente o resultado será zero. Portanto, para implementar
+    um AND bit a bit entre X e Y, basta focar em gerar um resultado 
+    que obtenha bits iguais nas mesmas posições em que haviam zeros em X e Y.
+    Nas posições que não havia zero, deve-se preencher com o bit oposto ao anterior.
+    Conseguimos isso aplicando um OR bit a bit entre um ~X e um ~Y.
+        Exemplo:
+            x        0011
+            y        1011
+            ~x       1100
+            ~y       0100
+            ~x|~y    1100
+
+    Agora que se tem todas as posições (relativas às posições de X ou Y em que haviam 0)
+    preenchidas com 1 e o restante das posições preenchidas com 0, temos a resposta equivalente
+    a um AND bit a bit com cada bit negado. Precisa-se então negar o resultado bit a bit para
+    a implementação exata de um &.
+            x        0011
+            y        1011
+            x&y      0011
+            ~(~x|~y) 0011
+     */
 
 /* Igual sem ==
  *      Permitido:
@@ -152,12 +186,24 @@ int32_t bitwiseAnd(int32_t x, int32_t y) {
 int32_t ehIgual(int32_t x, int32_t y) {
      return (!(x ^ y));
 }
-/**
- * xor bit a bit retorna 1 somente quando os bits sao diferentes
- * entao se os numeros forem iguais xor retornara 0 e xor retornara
- * diferente de 0 se forem diferentes. O ! retorna 1 somente se  o
- * numero se for 0 , qualquer outro numero ele retorna 0
- */
+/* 
+    Dois números serão iguais quando todos os bits entre eles
+    forem iguais dadas as mesmas posições.
+    Para implementar uma comparação de igualdade entre X e Y, 
+    pode-se usar o XOR bit a bit entre X e Y. Assim, o resultado
+    obtido será zero apenas se todos os bits comparados forem iguais em
+    X e Y nas mesmas posições. Caso contrário, o resultado sempre será
+    diferente de zero. 
+    Se temos 
+        zero quando X e Y são iguais 
+        e
+        diferente-de-zero quando X e Y forem diferentes
+    basta negar todo o resultado, já que queremos justamente o contrário:
+        quando iguais, retorna um
+        quando diferentes, retorna zero
+    Isto é possível, pois o operador ! aplicado a um número diferente de zero,
+    retorna zero e quando ! é aplicado a zero, retorna um.
+     */
 
 /* Limpa bit n
  *      Permitido:
@@ -176,12 +222,21 @@ int32_t ehIgual(int32_t x, int32_t y) {
 int32_t limpaBitN(int32_t x, int8_t n) {
     return (x & ~(1 << n));
 }
-/**
- * 1 bitshift para esquerda produz uma potencia de 2 na posicao 
- * a ser apagada, ao inverter esse valor teremos o numero invertido
- * - 1, ex: ~2^3 = ~8 = -8 -1 = -9. Ou seja o inverso sem o complemento
- * a dois. E ao fazer o and bit a bit teremos um 0 na posicao n
- */
+/* 
+    A ideia aqui é criar uma máscara totalmente preenchida
+    de 1, exceto na posição n, na qual será preenchida com zero.
+    Assim, aplicando a operação AND bit a bit de X com a máscara obtida,
+    persistiremos todos os bits de X, exceto o da posição n, que sempre será 
+    zero (pois um AND com um dos termos em zero sempre resulta em zero).
+    Para criar a máscara, basta shiftar o número um à esquerda n vezes e depois
+    negar bit a bit o resultado. Assim, teremos inicialmente todos os bits da máscara
+    em 0, exceto o da posição n que estará em 1, e após aplicar o ~ todos os bits se
+    inverterão.
+        exemplo: n = 2
+        1       0001
+        1<<n    0100
+        ~(1<<n) 1011
+     */
 
 /*
  * Bit na posição p do inteiro x
@@ -212,13 +267,16 @@ int32_t limpaBitN(int32_t x, int8_t n) {
 int32_t bitEmP(int32_t x, uint8_t p) {
     return ((x >> p) & 1);
 }
-/**
- * O bitshift a direita sera o mesmo que dividir x por 2^p que
- * o que eliminara os (p-1) bits menos significativos tornando
- * o ultimo bit do numero que sobrar a posicao p, que tomando 
- * um and 1 retornara 1 se esse ultimo bit for 1 ou 0 se ele 
- * for 0
- */
+/* 
+    O algoritmo usado aqui consiste em shiftar
+    x à direita p vezes, para que o bit na posição p
+    desejado passe a ser o LSb. Para então retornarmos
+    apenas o número correspondente ao bit do LSb, precisamos
+    zerar o restante dos bits. A maneira mais prática de fazer
+    isso é aplicando um AND com a máscara 00000...0001 (ou simplesmente 1), 
+    que preservará apenas o bit de X relativo à posição em que a máscara possui 
+    bit = 1, que no caso é o LSb. 
+     */
 
 /*
  * Byte na posição p do inteiro x
@@ -245,12 +303,24 @@ int32_t bitEmP(int32_t x, uint8_t p) {
 int32_t byteEmP(int32_t x, uint8_t p) {
     return ((x >> (p << 3)) & 0xFF);
 }
-/**
- * O bitshift a direita movera 8 bits ou 1 byte a direita, 
- * deixando o byte menos significativo como o numero que queremos
- * da posicao p. O and bit a bit com o ultimo numero em hexa 
- * retornara o proprio numero em hexa 
- */
+/* 
+    Aqui a idéia é parecida com a questão acima de bitEmP.
+    Sabendo que 1 Byte = 8 bits, para transladarmos o byte
+    na posição p para o LSB (Byte menos significativo), devemos
+    shiftar x à direita em múltiplos de 8. No caso, como p assume
+    valores possíveis 0 ou 1 ou 2 ou 3, que equivalem às posições
+    de cada Byte, sabemos que para levar o Byte de posição p para
+    o LSB (Byte menos significativo), devemos shiftar X à direita
+    em p*8 vezes.
+    A multiplicação de p por 8 pode ser feita com 3 shifts à esquerda 
+    de p, já que cada shif à esquerda representa uma multiplicação por 2,
+    e 2 elevado a 3 é igual a 8.
+    por fim, como queremos retornar apenas o byte desejado (até então nbo LSB),
+    devemos aplicar um AND com máscara que zere todos os outros bits que não sejam
+    relativos ao primeiro Byte. A máscara para isso seria o binário 0000...0011111111,
+    com apenas os oito primeiros bits em 1 e o restante em 0. Isso equivale ao número
+    FF em hexadecimal.
+     */
 
 /*
  * Seta byte na posição p do inteiro x como y
@@ -276,12 +346,25 @@ int32_t byteEmP(int32_t x, uint8_t p) {
 int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
     return (y<<(p<<3)) | (x & (~(0xff << (p << 3))));
 }
-/**
- * y<<(p<<3) criara um numero de um byte y seguidos de bytes formados por 0 ou somente 0 se y = 0
- * ~(0xff << (p << 3)) criara um numero composto somente por Fs e 0s no lugar do byte escolhido
- * x & ~(0xff << (p << 3)) substituira o local do byte p com 0s
- * e o or substituira os 0s pelo numero escolhido se y != 0 se y = 0 o numero ja estara correto
- */
+/* 
+    Para setar um Byte Y em uma posição específica P de um
+    número X, será necessário primeiro posicionar o Byte Y na 
+    posição em que se quer inserir (P), com o restante dos bits em zero.
+    Tendo isso pronto, precisamos zerar todos os bits relativos às posições
+    do Byte que se inicia na posição P de X.
+    Com os dois resultados prontos, "encaixar" um no outro é possível
+    aplicando um OR bit a bit entre os dois resultados. Assim, persistirão
+    todos os bits de X, exceto os da posições relativas ao Byte iniciado em P,
+    pois estes estarão valendo zero, fazendo com que persista apenas os bits dessas
+    posições relativos ao Y.
+
+    As operações para posicionar Y na posição correta inicialmente já foram explicadas
+    em exercícios anteriores, como byteEmP.
+    As operações para zerar o o Byte em P no número X consistem em criar uma máscara
+    com todos os bits em 1, exceto os da posições relativas ao byte em P (que ficarão em 0),
+    para então aplicar-se o & com X e obter a mesma sequência de bits de X, exceto o trecho com
+    posição relativa aos bits 0 da máscara, pois estes bits valerão 0 necessariamente.
+     */
 
 /*
  * Minimo
@@ -302,13 +385,17 @@ int32_t setaByteEmP(int32_t x, int32_t y, uint8_t p) {
 int32_t minimo(int32_t x, int32_t y) {
     return (y ^ ((x ^ y) & -(x < y)));
 }
-/**
- * A parte -(x < y) sera 0 se x >= y e sera -1 se x < y.
- * Como x & -1 = x  e x & 0 = 0 para qualquer 0. Se x < y teremos y ^ x ^ y que 
- * e igual a x porque y ^ y e zerado. E de qualquer outra maneira teriamos 
- * y ^ 0 que vale y. Entao teremos x se x < y e y de qualquer outra forma
- */
-
+/* 
+    -(x < y) será 0 se x >= y e será -1 (i.e. um int com todos os bits valendo 1) se x < y.
+    Observe que, para todo N:
+        (N & -1) = N    
+            e    
+        (N & 0) = 0
+    Então, se (x < y), nós recebemos (y ^ x ^ y), o que é igual a x porque (y ^ y) se cancela. 
+    E caso contrário, nós recebemos (y ^ 0), que é y. 
+    Então, recebemos x se (x < y) e y se !(x < y), o que é exatamente o que queremos.
+     */
+     
 /*
  * Negação lógica sem !
  *      Permitido:
